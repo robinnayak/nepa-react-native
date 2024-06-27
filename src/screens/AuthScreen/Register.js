@@ -23,6 +23,8 @@ const Register = () => {
     confirmPassword: "",
     phone_number: 0,
     isOwner: false,
+    isDriver: false,
+    license_number:"",
   });
   const [registerData, setRegisterData] = useState(null);
   const [error, setError] = useState(null);
@@ -34,7 +36,7 @@ const Register = () => {
     console.log("fetching data");
     try {
       //const response = await axios.get("http://10.0.2.2:8000/api/register");
-      const response = await axios.get(`${BASE_URL}/register`);
+      const response = await axios.get(`${BASE_URL}/register/`);
       console.log("response", response.data);
     } catch (error) {
       console.log("error", error);
@@ -66,7 +68,9 @@ const Register = () => {
           password: data.password,
           password2: data.confirmPassword,
           phone_number: data.phone_number,
-          is_organization: true,
+          license_number: data.license_number,
+          is_organization: data.isOwner,
+          is_driver: data.isDriver,
         },
         {
           headers: {
@@ -177,11 +181,35 @@ const Register = () => {
             keyboardType="numeric"
           />
         </View>
+        {data.isDriver && (
+          <View className=" flex flex-row justify-around items-center my-2">
+            <Text className="font-semibold text-center justify-center">
+              License Number:{" "}
+            </Text>
+            <TextInput
+              className="border-2 flex-1 rounded-lg px-2"
+              placeholder="License Number"
+              value={data.license_number}
+              onChangeText={(text) => handleChange("license_number", text)}
+            />
+          </View>
+        )}
+
         <View>
           <CheckBox
             title="Are you a owner?"
             checked={data.isOwner}
             onPress={() => setData({ ...data, isOwner: !data.isOwner })}
+            center
+          />
+          
+        </View>
+        <View>
+
+        <CheckBox
+            title="Are you a Driver?"
+            checked={data.isDriver}
+            onPress={() => setData({ ...data, isDriver: !data.isDriver })}
             center
           />
         </View>
@@ -190,6 +218,12 @@ const Register = () => {
           className="border-2 p-2 border-green-500 rounded-xl w-1/2 self-center "
         >
           <Text className="text-center">Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={()=>{navigation.navigate('TestPage')}}
+          className="border-2 p-2 border-green-500 rounded-xl w-1/2 self-center "
+        >
+          <Text className="text-center">Navigate to Test Page</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
