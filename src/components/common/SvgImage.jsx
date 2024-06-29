@@ -3,19 +3,15 @@ import React from 'react'
 import { createAvatar } from "@dicebear/core";
 import { avataaars } from "@dicebear/collection";
 import { SvgXml } from 'react-native-svg';
-const SvgImage = () => {
-    const generateAvatar = () => {
-        const svg = createAvatar(avataaars, {
-          seed: "Jasper",
-          width: 100,
-          height: 100,
-        });
-        return svg;
-      };
-      const svg = generateAvatar().toString();
+const SvgImage = ({seed}) => {
+  const avatarSvg = createAvatar(avataaars, {
+    seed: seed,
+    width: 100,
+    height: 100,
+  }).toString();
   return (
     <>
-      <SvgXml xml={svg} style={{ height: 140, width: 110 }} />
+      <SvgXml xml={avatarSvg} style={{ height: 100, width: 100 }} />
     </>
   )
 }

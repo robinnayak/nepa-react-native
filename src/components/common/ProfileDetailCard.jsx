@@ -9,12 +9,10 @@ import {
   faPhone,
   faRupee,
 } from "@fortawesome/free-solid-svg-icons";
-import { createAvatar } from "@dicebear/core";
-import { avataaars } from "@dicebear/collection";
 import { BASE_URL, MAIN_BASE_URL } from "../../services/baseurl";
-import { SvgXml } from "react-native-svg";
 import SvgImage from "./SvgImage";
-
+import { useDispatch,useSelector } from "react-redux";
+import { setAuth } from "../../app/features/auth/AuthSlice";
 // StarRatingIcon Component
 const StarRatingIcon = ({ rating }) => {
   const stars = Array(5)
@@ -47,7 +45,7 @@ const renderItem = (icon, data) => (
 );
 
 // OrganizationProfileDetailCard Component
-const OrganizationProfileDetailCard = ({ useId, navigation, token }) => {
+const OrganizationProfileDetailCard = ({ useId, navigation, token,dispatch,userData }) => {
   const [data, setData] = useState({});
 
 
@@ -56,7 +54,7 @@ const OrganizationProfileDetailCard = ({ useId, navigation, token }) => {
 
   useEffect(() => {
     getUserData();
-  }, [useId,data?.data]);
+  }, []);
 
   const getUserData = async () => {
     try {
@@ -70,7 +68,11 @@ const OrganizationProfileDetailCard = ({ useId, navigation, token }) => {
         }
       );
       // console.log("response", response.data);
+      // console.log("response", response.data.data.profile_image);
       setData(response.data);
+      // dispatch(setAuth({
+      //   profile_image: response?.data?.data?.profile_image,
+      // }));
     } catch (error) {
       console.error("Get user data failed", error);
       showMessage({
@@ -99,7 +101,7 @@ const OrganizationProfileDetailCard = ({ useId, navigation, token }) => {
             />
           ) : (
             <>
-              <SvgImage />
+              <SvgImage seed={username} />
 
               {/* <SvgXml xml={svg} style={{ height: 140, width: 110 }} /> */}
             </>
@@ -129,7 +131,7 @@ const OrganizationProfileDetailCard = ({ useId, navigation, token }) => {
 };
 
 // DriverProfileDetailCard Component
-const DriverProfileDetailCard = ({ useId, navigation, token }) => {
+const DriverProfileDetailCard = ({ useId, navigation, token,dispatch,userData }) => {
   const { profile_image, earnings, rating } = data?.data || {};
   const { username, email, phone_number } = data?.data?.user || {};
   const [data, setData] = useState({});
@@ -149,7 +151,7 @@ const DriverProfileDetailCard = ({ useId, navigation, token }) => {
           },
         }
       );
-      console.log("response", response.data);
+      // console.log("response", response.data);
       setData(response.data);
     } catch (error) {
       console.error("Get user data failed", error);
@@ -216,6 +218,12 @@ const ProfileDetailCard = ({
   IsOrganization,
   token,
 }) => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state) => state.auth);
+  console.log("====================================");
+  console.log("userData", userData);
+  console.log("====================================");
+
   return (
     <View>
       {IsDriver && (
@@ -223,6 +231,8 @@ const ProfileDetailCard = ({
           useId={useId}
           navigation={navigation}
           token={token}
+          dispatch={dispatch}
+          userData={userData}
         />
       )}
       {IsOrganization && (
@@ -230,6 +240,8 @@ const ProfileDetailCard = ({
           useId={useId}
           navigation={navigation}
           token={token}
+          dispatch={dispatch}
+          userData={userData}
         />
       )}
     </View>

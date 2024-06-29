@@ -10,6 +10,14 @@ import AiScreen from "../screens/AiScreen";
 import AddressPickUp from "../screens/AddressPickUp";
 import EditPage from "../components/common/EditPage";
 import TestScreen from "../screens/TestScreen";
+import OrganizationDriverProfile from "../components/Driver/OrganizationDriverProfile";
+import TripsScreen from "../screens/TripsScreen";
+import AddTrip from "../components/EditForms/AddTrip";
+import Vehicle from "../screens/Vehicle";
+import VehicleView from "../components/organization/VehicleView";
+import VehicleEdit from "../components/organization/VehicleEdit";
+import AddVehicle from "../components/organization/AddVehicle";
+import TripView from "../components/organization/TripView";
 const Stack = createNativeStackNavigator();
 
 const StackNavigate = () => {
@@ -133,6 +141,118 @@ const StackNavigate = () => {
         component={TestScreen}
         options={{
           title: "TestPage",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="organizationDriverProfile"
+        component={OrganizationDriverProfile}
+        options={{
+          title: "organizationDriverProfile",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="TripsScreen"
+        component={TripsScreen}
+        options={{
+          title: "TripsScreen",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="AddTrip"
+        component={AddTrip}
+        options={{
+          title: "AddTrip",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Vehicle"
+        component={Vehicle}
+        options={{
+          title: "Vehicle",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="VehicleView"
+        component={VehicleView}
+        options={{
+          title: "VehicleView",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="VehicleEdit"
+        component={VehicleEdit}
+        options={{
+          title: "VehicleEdit",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="AddVehicle"
+        component={AddVehicle}
+        options={{
+          title: "AddVehicle",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="TripView"
+        component={TripView}
+        options={{
+          title: "TripView",
           headerStyle: {
             backgroundColor: "#f4511e",
           },

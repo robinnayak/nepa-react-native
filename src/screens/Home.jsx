@@ -7,14 +7,19 @@ import { showMessage } from "react-native-flash-message";
 import Menu from "../components/Menu";
 import { useSelector } from "react-redux";
 import ProfileDetailCard from "../components/common/ProfileDetailCard";
+import Drivers from "../components/Driver/OrgnizationDrivers";
 
 const Home = () => {
   const navigation = useNavigation();
   const userData = useSelector((state) => state.auth);
-  const { username, user_id, token,is_driver, is_organization } = userData || {};
-  console.log("====================================")
-  console.log("userData", is_driver, is_organization);
-  console.log("====================================")
+  const {
+    username,
+    user_id,
+    token,
+    is_driver,
+    is_organization,
+    profile_image,
+  } = userData || {};
 
   const handleLogout = async () => {
     try {
@@ -40,41 +45,60 @@ const Home = () => {
       <View className="flex flex-col justify-evenly p-4">
         {/* Profile Card */}
         <View className="mb-4">
-          <ProfileDetailCard useId={user_id} navigation={navigation} IsDriver={is_driver} IsOrganization={is_organization} token={token} />
+          <ProfileDetailCard
+            useId={user_id}
+            navigation={navigation}
+            IsDriver={is_driver}
+            IsOrganization={is_organization}
+            token={token}
+          />
         </View>
 
         {/* Upcoming Trips Details */}
         <View className="mb-4 p-4 border-2 border-gray-200 rounded-lg">
-          <Text className="text-lg font-semibold mb-2">Upcoming Trips Details</Text>
-          {/* Add upcoming trips details here */}
+          <Drivers navigation={navigation} />
         </View>
 
         {/* Three Cards */}
         <View className="flex flex-row justify-between mb-4">
           {/* Trip Card */}
-          <View className="flex-1 mx-1 p-4 border-2 border-gray-200 rounded-lg items-center">
-            <Text className="text-lg font-semibold">Trips</Text>
-            {/* Add trip details here */}
-          </View>
+          <TouchableOpacity
+            className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+            onPress={() => navigation.navigate("TripsScreen")}
+          >
+            <View className="rounded-lg items-center">
+              <Text className="text-lg font-semibold">Trips</Text>
+              {/* Add trip details here */}
+            </View>
+          </TouchableOpacity>
           {/* Vehicle Card */}
-          <View className="flex-1 mx-1 p-4 border-2 border-gray-200 rounded-lg items-center">
-            <Text className="text-lg font-semibold">Vehicle</Text>
-            {/* Add vehicle details here */}
-          </View>
+          <TouchableOpacity
+            className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+            onPress={() => navigation.navigate('Vehicle')}
+          >
+            <View className="rounded-lg items-center">
+              <Text className="text-lg font-semibold">Vehicle</Text>
+            </View>
+          </TouchableOpacity>
+
           {/* Booking Card */}
-          <View className="flex-1 mx-1 p-4 border-2 border-gray-200 rounded-lg items-center">
-            <Text className="text-lg font-semibold">Booking</Text>
-            {/* Add booking details here */}
-          </View>
+          <TouchableOpacity
+            className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+            onPress={() => console.log("Booking screen is clicked")}
+          >
+            <View className="rounded-lg items-center">
+              <Text className="text-lg font-semibold">Booking</Text>
+            </View>
+          </TouchableOpacity>
         </View>
 
         {/* Logout Button */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={handleLogout}
           className="bg-red-500 p-3 rounded-lg items-center"
         >
           <Text className="text-white font-semibold">Logout</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       {/* Bottom Menu */}
       <View className="border-t-2 border-teal-400 rounded-lg bg-slate-50 h-16 absolute bottom-0 w-full">

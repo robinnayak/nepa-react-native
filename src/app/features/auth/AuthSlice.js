@@ -9,6 +9,10 @@ const initialState = {
   is_driver: "",
   profile_image: "",
   token: "",
+  trip_id: "",
+  trips: [],
+  vehicles: [],
+  vehicle:{},
 };
 
 export const authSlice = createSlice({
@@ -26,6 +30,17 @@ export const authSlice = createSlice({
       state.profile_image = action.payload.userData.profile_image;
       state.token = action.payload.token;
     },
+    setOrgTrips: (state, action) => {
+      console.log("====================================")
+      console.log("action trips", action.payload)
+      console.log("====================================")
+      state.trips = action.payload.trips;
+      state.trip_id = action.payload.trip_id;
+    },
+    setOrgVehicles: (state, action) => {
+      state.vehicles = action.payload.vehicles;
+      state.vehicle = action.payload.vehicle;
+    },
     logout: (state) => {
       state.username = "";
       state.token = "";
@@ -33,5 +48,5 @@ export const authSlice = createSlice({
   },
 });
 
-export const { setAuth, logout } = authSlice.actions;
+export const { setAuth, logout,setOrgTrips,setOrgVehicles } = authSlice.actions;
 export default authSlice.reducer;

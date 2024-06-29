@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -13,6 +14,8 @@ import axios from "axios";
 import { BASE_URL } from "../../services/baseurl";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuth } from "../../app/features/auth/AuthSlice";
+import SvgImage from "../../components/common/SvgImage";
+import nepalogo from "../../../assets/nepalogo.png";
 const Login = () => {
   const navigation = useNavigation();
 
@@ -96,6 +99,11 @@ const Login = () => {
   };
   return (
     <View className="flex h-full justify-center p-5">
+    <View className="flex flex-col justify-center items-center">
+      <Image source={nepalogo} className="w-32 h-32" />
+      <Text className="text-2xl font-semibold">Login With nepaMove</Text>
+    </View>
+    
       <View className="shadow-lg bg-white-50 p-3">
         <View className=" flex flex-row justify-around items-center my-2">
           <Text className="font-semibold text-center justify-center">

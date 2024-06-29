@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Image
 } from "react-native";
 // import { CheckBox } from "react-native-elements";
 import { CheckBox } from "@rneui/themed";
@@ -13,6 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { showMessage } from "react-native-flash-message";
 import axios from "axios";
 import { BASE_URL } from "../../services/baseurl";
+import nepalogo from "../../../assets/nepalogo.png";
 
 const Register = () => {
   const navigation = useNavigation();
@@ -122,6 +124,10 @@ const Register = () => {
   };
   return (
     <View className="flex h-full justify-center border-2 p-5">
+    <View className="flex flex-col justify-center items-center">
+      <Image source={nepalogo} className="w-32 h-32" />
+      <Text className="text-2xl font-semibold">Login With nepaMove</Text>
+    </View>
       <View className="shadow-lg bg-white-50 p-3">
         <View className=" flex flex-row justify-around items-center my-2">
           <Text className="font-semibold text-center justify-center">
@@ -219,12 +225,12 @@ const Register = () => {
         >
           <Text className="text-center">Register</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={()=>{navigation.navigate('TestPage')}}
           className="border-2 p-2 border-green-500 rounded-xl w-1/2 self-center "
         >
           <Text className="text-center">Navigate to Test Page</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           onPress={() => {
             navigation.navigate("Login");
