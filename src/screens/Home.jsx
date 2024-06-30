@@ -55,41 +55,89 @@ const Home = () => {
         </View>
 
         {/* Upcoming Trips Details */}
-        <View className="mb-4 p-4 border-2 border-gray-200 rounded-lg">
-          <Drivers navigation={navigation} />
-        </View>
+        {is_organization && (
+          <View className="mb-4 p-4 border-2 border-gray-200 rounded-lg">
+            <Drivers navigation={navigation} />
+          </View>
+        )}
+        {/* {!is_driver && !is_organization && (
+          <Text className="text-center text-lg font-semibold">
+            passenger Upcoming Trips Details
+          </Text>
+        )} */}
 
         {/* Three Cards */}
         <View className="flex flex-row justify-between mb-4">
           {/* Trip Card */}
-          <TouchableOpacity
-            className="flex-1 mx-1 p-4 border-2 border-gray-200 "
-            onPress={() => navigation.navigate("TripsScreen")}
-          >
-            <View className="rounded-lg items-center">
-              <Text className="text-lg font-semibold">Trips</Text>
-              {/* Add trip details here */}
-            </View>
-          </TouchableOpacity>
-          {/* Vehicle Card */}
-          <TouchableOpacity
-            className="flex-1 mx-1 p-4 border-2 border-gray-200 "
-            onPress={() => navigation.navigate('Vehicle')}
-          >
-            <View className="rounded-lg items-center">
-              <Text className="text-lg font-semibold">Vehicle</Text>
-            </View>
-          </TouchableOpacity>
 
+          {is_organization && (
+            <TouchableOpacity
+              className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+              onPress={() => navigation.navigate("TripsScreen")}
+            >
+              <View className="rounded-lg items-center">
+                <Text className="text-lg font-semibold">Trips</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          {/* {!is_driver && !is_organization && (
+            <TouchableOpacity
+              className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+              onPress={() => console.log("Trips screen is clicked")}
+            >
+              <View className="rounded-lg items-center">
+                <Text className="text-lg font-semibold">Trips</Text>
+              </View>
+            </TouchableOpacity>
+          )} */}
+
+          {/* Add trip details here */}
+          {/* Vehicle Card */}
+
+          {is_organization && (
+            <TouchableOpacity
+              className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+              onPress={() => navigation.navigate("Vehicle")}
+            >
+              <View className="rounded-lg items-center">
+                <Text className="text-lg font-semibold">Vehicle</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          {/* {!is_driver && !is_organization && (
+            <TouchableOpacity
+              className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+              onPress={() => console.log("Vehicle screen is clicked")}
+            >
+              <View className="rounded-lg items-center">
+                <Text className="text-lg font-semibold">Vehicle</Text>
+              </View>
+            </TouchableOpacity>
+          )} */}
           {/* Booking Card */}
-          <TouchableOpacity
-            className="flex-1 mx-1 p-4 border-2 border-gray-200 "
-            onPress={() => console.log("Booking screen is clicked")}
-          >
-            <View className="rounded-lg items-center">
-              <Text className="text-lg font-semibold">Booking</Text>
-            </View>
-          </TouchableOpacity>
+
+          {is_organization && (
+            <TouchableOpacity
+              className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+              onPress={() => navigation.navigate("Booking")}
+            >
+              <View className="rounded-lg items-center">
+                <Text className="text-lg font-semibold">Booking</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          {/* {!is_driver && !is_organization && (
+            <TouchableOpacity
+              className="flex-1 mx-1 p-4 border-2 border-gray-200 "
+              onPress={() => console.log("Booking screen is clicked")}
+            >
+              <View className="rounded-lg items-center">
+                <Text className="text-lg font-semibold">Booking</Text>
+              </View>
+            </TouchableOpacity>
+          )} */}
         </View>
 
         {/* Logout Button */}

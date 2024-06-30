@@ -13,6 +13,7 @@ import { BASE_URL, MAIN_BASE_URL } from "../../services/baseurl";
 import SvgImage from "./SvgImage";
 import { useDispatch,useSelector } from "react-redux";
 import { setAuth } from "../../app/features/auth/AuthSlice";
+import PassengerProfile from "../passenger/PassengerProfile";
 // StarRatingIcon Component
 const StarRatingIcon = ({ rating }) => {
   const stars = Array(5)
@@ -244,6 +245,17 @@ const ProfileDetailCard = ({
           userData={userData}
         />
       )}
+      {!IsDriver && !IsOrganization && (
+        
+        <PassengerProfile 
+          useId={useId}
+          navigation={navigation}
+          token={token}
+          dispatch={dispatch}
+          userData={userData}
+         />
+      )
+        }
     </View>
   );
 };
