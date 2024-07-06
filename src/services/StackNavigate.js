@@ -18,6 +18,9 @@ import VehicleView from "../components/organization/VehicleView";
 import VehicleEdit from "../components/organization/VehicleEdit";
 import AddVehicle from "../components/organization/AddVehicle";
 import TripView from "../components/organization/TripView";
+import BookingDetailView from "../components/passenger/BookingDetailView";
+import Booking from "../components/common/Booking";
+import CommonMapGView from "../components/common/maps/CommonMapGView";
 const Stack = createNativeStackNavigator();
 
 const StackNavigate = () => {
@@ -253,6 +256,48 @@ const StackNavigate = () => {
         component={TripView}
         options={{
           title: "TripView",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="BookingDetailView"
+        component={BookingDetailView}
+        options={{
+          title: "BookingDetailView",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Booking"
+        component={Booking}
+        options={{
+          title: "Booking",
+          headerStyle: {
+            backgroundColor: "#f4511e",
+          },
+          headerTintColor: "#fff",
+          headerTitleStyle: {
+            fontWeight: "bold",
+          },
+        }}
+      />
+      <Stack.Screen
+        name="CommonMapGView"
+        component={CommonMapGView}
+        options={{
+          title: "CommonMapGView",
           headerStyle: {
             backgroundColor: "#f4511e",
           },

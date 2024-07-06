@@ -21,7 +21,7 @@ const OrganizationDrivers = ({ navigation }) => {
 
   const getFilterData = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/organization/driver`, {
+      const response = await axios.get(`${BASE_URL}/organization/driver/`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

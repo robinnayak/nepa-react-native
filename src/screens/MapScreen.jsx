@@ -1,4 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  Animated,
+} from "react-native";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Menu from "../components/Menu";
 import { GOOGLE_API_KEY } from "@env";
@@ -7,6 +14,8 @@ import * as Location from "expo-location";
 import SearchBtn from "../components/SearchBtn";
 import MapViewDirections from "react-native-maps-directions";
 import { getDistance } from "geolib";
+import VanMapIcon from "../../assets/vanmapicon.png";
+import CommonMapGView from "../components/common/maps/CommonMapGView";
 
 const MapScreen = ({ navigation, route }) => {
   const destCoords = route?.params?.data || null;
@@ -17,13 +26,19 @@ const MapScreen = ({ navigation, route }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [destAddress, setDestAddress] = useState({});
   const [distance, setDistance] = useState(null);
+  const vanIconAnim = useRef(new Animated.Value(0)).current;
 
   const riderData = [
     { latitude: 26.7105, longitude: 85.9278, name: "Rider 1", loc: "Janakpur" },
     { latitude: 27.5922, longitude: 84.7964, name: "Rider 2", loc: "Chitwan" },
-    { latitude: 28.2000, longitude: 83.9833, name: "Rider 3", loc: "Pokhara" },
+    { latitude: 28.2, longitude: 83.9833, name: "Rider 3", loc: "Pokhara" },
     { latitude: 27.6706, longitude: 85.3797, name: "Rider 4", loc: "Banepa" },
-    { latitude: 27.6667, longitude: 85.4167, name: "Rider 5", loc: "Bhaktapur" },
+    {
+      latitude: 27.6667,
+      longitude: 85.4167,
+      name: "Rider 5",
+      loc: "Bhaktapur",
+    },
     { latitude: 27.1769, longitude: 84.9842, name: "Rider 6", loc: "Hetauda" },
   ];
 
@@ -90,22 +105,25 @@ const MapScreen = ({ navigation, route }) => {
     };
   }, [dropup]);
 
-  const getDistanceBetween = useCallback((currentLocation = location, dropupLocation = dropup) => {
-    if (currentLocation && dropupLocation) {
-      const distance = getDistance(
-        {
-          latitude: currentLocation.coords.latitude,
-          longitude: currentLocation.coords.longitude,
-        },
-        {
-          latitude: dropupLocation.latitude,
-          longitude: dropupLocation.longitude,
-        }
-      );
-      setDistance(distance / 1000);
-      console.log("Distance between two points:", distance / 1000, "km");
-    }
-  }, [location, dropup]);
+  const getDistanceBetween = useCallback(
+    (currentLocation = location, dropupLocation = dropup) => {
+      if (currentLocation && dropupLocation) {
+        const distance = getDistance(
+          {
+            latitude: currentLocation.coords.latitude,
+            longitude: currentLocation.coords.longitude,
+          },
+          {
+            latitude: dropupLocation.latitude,
+            longitude: dropupLocation.longitude,
+          }
+        );
+        setDistance(distance / 1000);
+        console.log("Distance between two points:", distance / 1000, "km");
+      }
+    },
+    [location, dropup]
+  );
 
   const changeCoordsToAddress = useCallback(
     async (latitude, longitude) => {
@@ -169,7 +187,19 @@ const MapScreen = ({ navigation, route }) => {
           pinColor="red"
           title="My Location"
           description="This is my current location"
-        />
+        >
+          <Animated.Image
+            source={VanMapIcon}
+            style={{
+              width: 50,
+              height: 50,
+              transform: [
+                { rotate: `${location.coords.heading}deg` },
+                { scale: vanIconAnim },
+              ],
+            }}
+          />
+        </Marker>
       );
     }
 
@@ -206,14 +236,31 @@ const MapScreen = ({ navigation, route }) => {
     }
 
     return markers;
-  }, [location, dropup, riderData]);
+  }, [location, dropup, riderData, vanIconAnim]);
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(vanIconAnim, {
+          toValue: 1.2,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(vanIconAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, [vanIconAnim]);
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       {location && location.coords ? (
         <>
           <MapView
-            style={StyleSheet.absoluteFill}
+            className="absolute top-0 left-0 right-0 bottom-0"
             initialRegion={{
               latitude: location.coords.latitude,
               longitude: location.coords.longitude,
@@ -239,10 +286,18 @@ const MapScreen = ({ navigation, route }) => {
               />
             )}
           </MapView>
-          <SearchBtn btnName="Choose Destination" onPressText={navigateToAddressPickUp} />
-
-          <View className="border-2">
-            <Text className="text-center text-green-500 bg-white">
+          <SearchBtn
+            btnName="Choose Destination"
+            onPressText={navigateToAddressPickUp}
+          />
+          <TouchableOpacity
+            className="border-2 rounded-xl self-center m-2"
+            onPress={() => navigation.navigate('CommonMapGView')}
+          >
+            <Text className="p-4 text-gray-700">Activate Current location</Text>
+          </TouchableOpacity>
+          <View className="border-2 p-2 bg-white">
+            <Text className="text-center text-green-500">
               Distance Left: {distance || "0"} km
             </Text>
           </View>
@@ -265,16 +320,5 @@ export default MapScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  menuContainer: {
-    borderTopWidth: 2,
-    borderColor: "teal",
-    backgroundColor: "white",
-    height: 64,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
   },
 });

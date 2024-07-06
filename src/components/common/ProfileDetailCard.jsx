@@ -8,12 +8,15 @@ import {
   faEnvelope,
   faPhone,
   faRupee,
+  faSitemap,
+  faLocationDot
 } from "@fortawesome/free-solid-svg-icons";
 import { BASE_URL, MAIN_BASE_URL } from "../../services/baseurl";
 import SvgImage from "./SvgImage";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setAuth } from "../../app/features/auth/AuthSlice";
 import PassengerProfile from "../passenger/PassengerProfile";
+import TouchPushMessage from "../DriverProfile/TouchPushMessage";
 // StarRatingIcon Component
 const StarRatingIcon = ({ rating }) => {
   const stars = Array(5)
@@ -46,9 +49,15 @@ const renderItem = (icon, data) => (
 );
 
 // OrganizationProfileDetailCard Component
-const OrganizationProfileDetailCard = ({ useId, navigation, token,dispatch,userData }) => {
+const OrganizationProfileDetailCard = ({
+  useId,
+  navigation,
+  token,
+  dispatch,
+  userData,
+}) => {
   const [data, setData] = useState({});
-
+  const [loading, setLoading] = useState(false);
 
   const { profile_image, earnings, rating } = data?.data || {};
   const { username, email, phone_number } = data?.data?.user || {};
@@ -58,16 +67,14 @@ const OrganizationProfileDetailCard = ({ useId, navigation, token,dispatch,userD
   }, []);
 
   const getUserData = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(
-        `${BASE_URL}/organization/${useId}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/organization/${useId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       // console.log("response", response.data);
       // console.log("response", response.data.data.profile_image);
       setData(response.data);
@@ -81,12 +88,14 @@ const OrganizationProfileDetailCard = ({ useId, navigation, token,dispatch,userD
         description: "Something went wrong. Please try again.",
         type: "danger",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-
   return (
     <View className="flex flex-row justify-between border-2 border-green-600 rounded-xl p-4">
+      {loading && <Text>Loading...</Text>}
       <View className="flex flex-row gap-5 items-center">
         <View className="overflow-hidden border-sky-200 rounded-full">
           {profile_image ? (
@@ -132,28 +141,31 @@ const OrganizationProfileDetailCard = ({ useId, navigation, token,dispatch,userD
 };
 
 // DriverProfileDetailCard Component
-const DriverProfileDetailCard = ({ useId, navigation, token,dispatch,userData }) => {
-  const { profile_image, earnings, rating } = data?.data || {};
-  const { username, email, phone_number } = data?.data?.user || {};
+const DriverProfileDetailCard = ({
+  useId,
+  navigation,
+  token,
+  dispatch,
+  userData,
+  
+}) => {
   const [data, setData] = useState({});
 
   useEffect(() => {
     getUserData();
-  }, [useId,data?.data]);
+  }, [useId]);
 
   const getUserData = async () => {
     try {
       // const response = await axios.get(`${BASE_URL}/driver/${useId}/`);
-      const response = await axios.get(`${BASE_URL}/driver/${useId}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      // console.log("response", response.data);
-      setData(response.data);
+      const response = await axios.get(`${BASE_URL}/driver/${useId}/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("response", response.data.data);
+      setData(response.data.data);
     } catch (error) {
       console.error("Get user data failed", error);
       showMessage({
@@ -163,8 +175,16 @@ const DriverProfileDetailCard = ({ useId, navigation, token,dispatch,userData })
       });
     }
   };
+  console.log("====================================");
+  console.log("data", data);
+  console.log("====================================");
 
-
+  const { profile_image, earnings, rating,address,availability_status,organization } = data || {};
+  const { username, email, phone_number } = data?.user || {};
+  const {name} = organization || {};
+  console.log("====================================");
+  console.log("organization", name);
+  console.log("====================================");
 
   return (
     <View className="flex flex-row justify-between border-2 border-green-600 rounded-xl p-4">
@@ -183,7 +203,7 @@ const DriverProfileDetailCard = ({ useId, navigation, token,dispatch,userData })
             />
           ) : (
             <>
-              <SvgImage />
+              <SvgImage seed={username} />
               {/* <SvgXml xml={svg} style={{ height: 140, width: 110 }} /> */}
             </>
           )}
@@ -195,10 +215,22 @@ const DriverProfileDetailCard = ({ useId, navigation, token,dispatch,userData })
         </View>
 
         <View>
+        {renderItem(faSitemap, name)}
           {renderItem(faUser, username)}
           {renderItem(faEnvelope, email)}
           {renderItem(faPhone, phone_number)}
+          {renderItem(faLocationDot, address)}
           {renderItem(faRupee, earnings)}
+          <View className="flex flex-row items-center mt-2">
+          <View
+            className={`w-3 h-3 rounded-full mr-2 ${
+              availability_status ? "bg-green-500" : "bg-red-500"
+            }`}
+          />
+          <Text className="text-sm">
+            {availability_status ? "Online" : "Offline"}
+          </Text>
+        </View>
           <View className="flex flex-row justify-evenly border-b-2 pb-1 border-gray-700 rounded-md">
             <StarRatingIcon rating={Math.round(rating)} />
           </View>
@@ -228,13 +260,16 @@ const ProfileDetailCard = ({
   return (
     <View>
       {IsDriver && (
-        <DriverProfileDetailCard
-          useId={useId}
-          navigation={navigation}
-          token={token}
-          dispatch={dispatch}
-          userData={userData}
-        />
+        <>
+          <DriverProfileDetailCard
+            useId={useId}
+            navigation={navigation}
+            token={token}
+            dispatch={dispatch}
+            userData={userData}
+          />
+          
+        </>
       )}
       {IsOrganization && (
         <OrganizationProfileDetailCard
@@ -246,16 +281,14 @@ const ProfileDetailCard = ({
         />
       )}
       {!IsDriver && !IsOrganization && (
-        
-        <PassengerProfile 
+        <PassengerProfile
           useId={useId}
           navigation={navigation}
           token={token}
           dispatch={dispatch}
           userData={userData}
-         />
-      )
-        }
+        />
+      )}
     </View>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,70 +7,64 @@ import {
   Button,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
+  StyleSheet,
 } from "react-native";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { BASE_URL } from "../../services/baseurl";
+import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
 
 const HomePage = ({ navigation }) => {
   const [vehicles, setVehicles] = useState([]);
   const [trips, setTrips] = useState([]);
-  const [datas, setDatas] = useState([]);
   const [passenger, setPassenger] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState("vehicles");
   const [filteredTrips, setFilteredTrips] = useState([]);
   const [destination, setDestination] = useState("");
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(new Date());
   const token = useSelector((state) => state.auth.token);
-
+  const [check_if_available, setCheckAvailable] = useState(false)
   useEffect(() => {
-    fetchPassenger();
-    fetchVehicles();
+    fetchData();
   }, []);
 
-  const fetchPassenger = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/passenger/`, {
+      const passengerResponse = await axios.get(`${BASE_URL}/passenger/`, {
         headers: {
-          "content-type": "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
-      setPassenger(response.data);
-    } catch (error) {
-      console.error("Error fetching passenger data:", error);
-    }
-  };
+      setPassenger(passengerResponse.data);
 
-  const fetchVehicles = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/organization/vehicle/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const vehicleResponse = await axios.get(
+        `${BASE_URL}/organization/vehicle/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = vehicleResponse.data?.data || [];
+      const vehiclesList = [];
+      const tripsList = [];
+
+      data.forEach((item) => {
+        vehiclesList.push(item.vehicle);
+        tripsList.push(item.trip_price);
       });
-      setDatas(response.data?.data || []);
-      splitDataToVehicleAndTrip(response.data?.data || []);
+
+      setVehicles(vehiclesList);
+      setTrips(tripsList);
       setIsLoading(false);
     } catch (error) {
-      console.error("Error fetching vehicle data:", error);
+      console.error("Error fetching data:", error);
       setIsLoading(false);
     }
-  };
-
-  const splitDataToVehicleAndTrip = (data) => {
-    const vehiclesList = [];
-    const tripsList = [];
-
-    data.forEach((item) => {
-      vehiclesList.push(item.vehicle);
-      tripsList.push(item.trip_price);
-    });
-
-    setVehicles(vehiclesList);
-    setTrips(tripsList);
-  };
+  }, [token]);
 
   const handleSearch = () => {
     const filtered = trips.filter((trip) => {
@@ -90,34 +84,105 @@ const HomePage = ({ navigation }) => {
     setFilteredTrips(filtered);
   };
 
+  const InBetweenPlaces = ({ trip, destination }) => {
+    const locationsInBetween = [
+      "Bardibas",
+      "Sindhuli",
+      "Nepalthok",
+      "Mangaltar",
+      "Palekhet",
+      "Kavre Bhaynjung",
+      "Dhulikhel",
+      "Banepa",
+      "Sanga",
+    ];
+
+    const fromLocation = trip.from_location.toLowerCase();
+    const toLocation = trip.to_location.toLowerCase();
+    const inputDestination = destination.toLowerCase();
+
+    const isTripBetweenKathmanduJanakpur =
+      fromLocation === "kathmandu" && toLocation === "janakpur";
+
+    const isInBetween = isTripBetweenKathmanduJanakpur
+      ? locationsInBetween.some(
+          (location) => location.toLowerCase() === inputDestination
+        )
+      : false;
+
+    return (
+      <View>
+        <Text className="text-lg text-green-400 font-semibold">
+          {isInBetween ? "Yes" : ""}
+          {/* {isInBetween ? setCheckAvailable(true) : ""} */}
+        </Text>
+        <Text>
+          {isTripBetweenKathmanduJanakpur &&
+            `[${locationsInBetween.join(", ")}]`}
+        </Text>
+      </View>
+    );
+  };
+
   const VehicleList = ({ trips }) => (
-    <View>
+    <SafeAreaView>
       {trips.map((trip, index) => (
-        <View key={index} className="mb-4">
-          <Text className="text-lg font-bold">{trip?.vehicle?.model||"Cursie"}</Text>
-          <Text>Type: {trip?.vehicle?.vehicle_type || "van"}</Text>
-          <Text>Seats: {trip?.vehicle?.seating_capacity|| 14}</Text>
-          <Text>Color: {trip?.vehicle?.color|| "white"}</Text>
-          <Text>License Plate: {trip?.vehicle?.license_plate_number || "NEP01903"}</Text>
-        </View>
+        <TouchableOpacity
+          key={index}
+          onPress={() =>
+            navigation.navigate("BookingDetailView", { trip: trip })
+          }
+        >
+          <View className="mb-4">
+            <Text className="text-lg font-bold">
+              {trip?.vehicle?.model || "Cursie"}
+            </Text>
+            <Text>Type: {trip?.vehicle?.vehicle_type || "van"}</Text>
+            <Text>Seats: {trip?.vehicle?.seating_capacity || 14}</Text>
+            <Text>Color: {trip?.vehicle?.color || "white"}</Text>
+            <Text>
+              License Plate: {trip?.vehicle?.license_plate_number || "NEP01903"}
+            </Text>
+            <InBetweenPlaces trip={trip.trip} destination={destination} />
+          </View>
+        </TouchableOpacity>
       ))}
-    </View>
+    </SafeAreaView>
   );
 
   const TripList = ({ trips }) => (
     <View>
       {trips.map((trip, index) => (
-        <View key={index} className="mb-4">
-          <Text className="text-lg font-bold">
-            Destination: {trip.trip.to_location}
-          </Text>
-          <Text>Date: {trip.trip.start_datetime}</Text>
-          <Text>Price: {trip.price}</Text>
-        </View>
+        <TouchableOpacity
+          key={index}
+          onPress={() =>
+            navigation.navigate("BookingDetailView", { trip: trip })
+          }
+        >
+          <View className="mb-4">
+            <Text className="text-lg font-bold">
+              Journey {trip.trip.from_location} to Destination{" "}
+              {trip.trip.to_location}
+            </Text>
+            <Text>Date: {trip.trip.start_datetime}</Text>
+            <Text>Price: {trip.price}</Text>
+            <InBetweenPlaces trip={trip.trip} destination={destination} />
+          </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
-
+  const showDatePicker = () => {
+    DateTimePickerAndroid.open({
+      value: date,
+      onChange: (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setDate(currentDate);
+      },
+      mode: "date",
+      minimumDate: new Date(),
+    });
+  };
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -144,16 +209,14 @@ const HomePage = ({ navigation }) => {
           value={destination}
           onChangeText={setDestination}
         />
-        <TextInput
-          placeholder="Select date"
-          className="border border-gray-300 p-2 rounded-md mt-2"
-          value={date}
-          onChangeText={setDate}
-        />
+        {/* <View style={styles.calendar}>
+          <Text className="border-2 border-gray-300 p-2 rounded-md">{date.toDateString()}</Text>
+          <Button onPress={showDatePicker} title="Select date" />
+        </View> */}
         <Button title="Search Trips" onPress={handleSearch} />
       </View>
 
-      <View className="mb-4">
+      {/* <View className="mb-4">
         <Text className="text-xl font-bold">Fixed Destinations</Text>
         {["Janakpur to Kathmandu", "Dharan to Kathmandu"].map(
           (destination, index) => (
@@ -162,12 +225,13 @@ const HomePage = ({ navigation }) => {
             </TouchableOpacity>
           )
         )}
-      </View>
+      </View> */}
 
       <View className="flex-row justify-between mb-4">
         <Button title="Vehicles" onPress={() => setFilter("vehicles")} />
         <Button title="Trips" onPress={() => setFilter("trips")} />
       </View>
+      {/* <Text>{check_if_available?"yes":""}</Text> */}
 
       <View className="mb-4">
         {filter === "vehicles" ? (
@@ -192,3 +256,11 @@ const PassengerProfile = ({ navigation }) => {
 };
 
 export default PassengerProfile;
+const styles = StyleSheet.create({
+  calendar: {
+    flex: 1,
+    justifyContent: "center",
+    padding: 16,
+  },
+});
+// can you rewrite this and also improve the filtering code and logic

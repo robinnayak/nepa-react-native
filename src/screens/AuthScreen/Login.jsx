@@ -26,6 +26,7 @@ const Login = () => {
   });
   const [loginData, setLoginData] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     // fetchRegisterData();
   }, []);
@@ -35,6 +36,7 @@ const Login = () => {
   };
   const handleLogin = async () => {
     // called api here to register
+    setLoading(true);
     try {
       const response = await axios.post(
         `${BASE_URL}/login/`,
@@ -49,6 +51,7 @@ const Login = () => {
         }
       );
       // console.log("response", response.data);
+      setLoading(false);
       setLoginData(response.data);
       // dispatch(setAuth(response.data.user));
       dispatch(
@@ -96,6 +99,10 @@ const Login = () => {
         });
       }
     }
+    finally{
+      setLoading(false);
+    }
+
   };
   return (
     <View className="flex h-full justify-center p-5">
@@ -134,7 +141,7 @@ const Login = () => {
           onPress={handleLogin}
           className="border-2 p-2 border-green-500 rounded-xl w-1/2 self-center "
         >
-          <Text className="text-center">Login</Text>
+          <Text className="text-center">Login {loading?"Loading...":""}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {

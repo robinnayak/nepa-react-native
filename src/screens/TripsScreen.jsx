@@ -31,6 +31,8 @@ const TripsScreen = ({ navigation }) => {
   const [selectedVehicleId, setSelectedVehicleId] = useState("");
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
+  const is_organization = useSelector((state) => state.auth.is_organization);
+  const is_driver = useSelector((state) => state.auth.is_driver);
 
   useEffect(() => {
     getTripsData();
@@ -180,70 +182,79 @@ const TripsScreen = ({ navigation }) => {
       <Text className="text-gray-600">
         End: {new Date(trip.end_datetime).toLocaleString()}
       </Text>
-      
-      <View>
-        <Text className="text-gray-600 font-semibold">Price:</Text>
-        <TextInput
-          placeholder="Enter Price"
-          keyboardType="numeric"
-          className="border border-gray-300 rounded p-2 mb-2"
-          value={data.price.toString()}
-          onChangeText={(text) => setData({ ...data, price: text })}
-        />
-        <View className="mb-4">
-          <Text className="text-gray-600 font-semibold">
-            Choose Vehicle Registration IDs:
-          </Text>
-          <RNPickerSelect
-            onValueChange={(value) =>
-              setData({ ...data, vehicle_registration_number: value })
-            }
-            items={vehicleIds.map((id) => ({ label: id, value: id }))}
-            value={data.vehicle_registration_number}
-            style={{
-              inputAndroid: {
-                borderWidth: 1,
-                borderColor: "gray",
-                borderRadius: 8,
-                padding: 10,
-                marginVertical: 8,
-                color: "black",
-              },
-              inputIOS: {
-                borderWidth: 1,
-                borderColor: "gray",
-                borderRadius: 8,
-                padding: 10,
-                marginVertical: 8,
-                color: "black",
-              },
-            }}
+
+      {is_driver && (
+        <Text className="text-gray-600">
+          Price: {trip.price ? `Rs. ${trip.price}` : "Not Set"}
+        </Text>
+      )}
+
+      {is_organization && (
+        <View>
+          <Text className="text-gray-600 font-semibold">Price:</Text>
+          <TextInput
+            placeholder="Enter Price"
+            keyboardType="numeric"
+            className="border border-gray-300 rounded p-2 mb-2"
+            value={data.price.toString()}
+            onChangeText={(text) => setData({ ...data, price: text })}
           />
+          <View className="mb-4">
+            <Text className="text-gray-600 font-semibold">
+              Choose Vehicle Registration IDs:
+            </Text>
+            <RNPickerSelect
+              onValueChange={(value) =>
+                setData({ ...data, vehicle_registration_number: value })
+              }
+              items={vehicleIds.map((id) => ({ label: id, value: id }))}
+              value={data.vehicle_registration_number}
+              style={{
+                inputAndroid: {
+                  borderWidth: 1,
+                  borderColor: "gray",
+                  borderRadius: 8,
+                  padding: 10,
+                  marginVertical: 8,
+                  color: "black",
+                },
+                inputIOS: {
+                  borderWidth: 1,
+                  borderColor: "gray",
+                  borderRadius: 8,
+                  padding: 10,
+                  marginVertical: 8,
+                  color: "black",
+                },
+              }}
+            />
+          </View>
+          <TouchableOpacity
+            onPress={() => handleSubmit(trip.trip_id)}
+            className={`border-2 bg-green-500 rounded-lg py-3 ${
+              loading ? "opacity-50" : ""
+            }`}
+            disabled={loading}
+          >
+            <Text className="text-center text-lg font-semibold text-white">
+              {loading ? "Posting..." : "Add Price"}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-green-500 rounded-lg p-2 mt-2"
+            onPress={() => navigation.navigate("TripView", { trip })}
+          >
+            <Text className="text-white text-center">View Trip</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="bg-red-500 rounded-lg p-2 mt-2"
+            onPress={() => deleteTrip(trip.trip_id)}
+          >
+            <Text className="text-white text-center">Delete Trip</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={() => handleSubmit(trip.trip_id)}
-          className={`border-2 bg-green-500 rounded-lg py-3 ${
-            loading ? "opacity-50" : ""
-          }`}
-          disabled={loading}
-        >
-          <Text className="text-center text-lg font-semibold text-white">
-            {loading ? "Posting..." : "Add Price"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity
-        className="bg-green-500 rounded-lg p-2 mt-2"
-        onPress={() => navigation.navigate("TripView", { trip })}
-      >
-        <Text className="text-white text-center">View Trip</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        className="bg-red-500 rounded-lg p-2 mt-2"
-        onPress={() => deleteTrip(trip.trip_id)}
-      >
-        <Text className="text-white text-center">Delete Trip</Text>
-      </TouchableOpacity>
+      )}
     </View>
   );
 
@@ -268,12 +279,15 @@ const TripsScreen = ({ navigation }) => {
           onChangeText={setToLocation}
         />
       </View>
-      <TouchableOpacity
-        className="bg-blue-500 rounded-lg p-4 mb-4 items-center"
-        onPress={navigateToAddTrip}
-      >
-        <Text className="text-white text-center">Add New Trip</Text>
-      </TouchableOpacity>
+      {is_organization && (
+        <TouchableOpacity
+          className="bg-blue-500 rounded-lg p-4 mb-4 items-center"
+          onPress={() => navigation.navigate("AddTrip")}
+        >
+          <Text className="text-white text-center">Add New Trip</Text>
+        </TouchableOpacity>
+      )}
+
       <ScrollView className="flex-1">
         {filteredTrips.length > 0 ? (
           filteredTrips.map((trip) => renderTripItem(trip))

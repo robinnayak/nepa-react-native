@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import axios from "axios";
 import { BASE_URL } from "../services/baseurl";
 import { useSelector } from "react-redux";
@@ -9,6 +15,7 @@ import VehicleDetailCard from "../components/Driver/VehicleDetaiCard";
 
 const Vehicle = () => {
   const token = useSelector((state) => state.auth.token);
+  const is_organization = useSelector((state) => state.auth.is_organization);
   const [vehicles, setVehicles] = useState([]);
   const navigation = useNavigation();
 
@@ -18,12 +25,15 @@ const Vehicle = () => {
 
   const getVehiclesData = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/organization/vehicle-filter-org/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${BASE_URL}/organization/vehicle-filter-org/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       console.log("response", response.data);
       setVehicles(response.data || []);
     } catch (error) {
@@ -35,17 +45,19 @@ const Vehicle = () => {
   const onAdd = () => {
     navigation.navigate("AddVehicle");
   };
-  
+
   return (
     <View className="p-4 flex-1 bg-gray-100">
       <Text className="text-2xl font-semibold mb-4">Vehicles</Text>
       <ScrollView className="flex-1">
-        <TouchableOpacity
-          className="bg-blue-500 rounded-lg p-2 mb-4"
-          onPress={onAdd}
-        >
-          <Text className="text-white text-center">Add New Vehicle</Text>
-        </TouchableOpacity>
+        {is_organization && (
+          <TouchableOpacity
+            className="bg-blue-500 rounded-lg p-2 mb-4"
+            onPress={onAdd}
+          >
+            <Text className="text-white text-center">Add New Vehicle</Text>
+          </TouchableOpacity>
+        )}
         {vehicles.length > 0 ? (
           vehicles.map((vehicle) => (
             <VehicleDetailCard
